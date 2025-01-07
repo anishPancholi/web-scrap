@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twitter Trends</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    button { padding: 10px 20px; cursor: pointer; }
+    ul { list-style: none; padding: 0; }
+    li { margin-bottom: 10px; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Twitter Trends</h1>
+  <button id="runScriptBtn">Run Script</button>
+  <div id="results" style="margin-top: 20px;">
+    <h2>Results</h2>
+    <ul id="trends"></ul>
+    <p id="ipAddress"></p>
+    <pre id="jsonOutput"></pre>
+  </div>
+
+  <script>
+    document.getElementById('runScriptBtn').addEventListener('click', async () => {
+      const trendsList = document.getElementById('trends');
+      const ipAddress = document.getElementById('ipAddress');
+      const jsonOutput = document.getElementById('jsonOutput');
+
+      // Trigger the script
+      await fetch('http://localhost:5500/run-script', { method: 'POST' });
+
+      // Fetch the latest trends
+      const response = await fetch('http://localhost:5500/get-trends');
+      if (response.ok) {
+        const data = await response.json();
+
+        trendsList.innerHTML = `
+          <li>${data.trend1}</li>
+          <li>${data.trend2}</li>
+          <li>${data.trend3}</li>
+          <li>${data.trend4}</li>
+          <li>${data.trend5}</li>
+        `;
+        ipAddress.textContent = `IP Address used: ${data.ip_address}`;
+        jsonOutput.textContent = JSON.stringify(data, null, 2);
+      } else {
+        trendsList.innerHTML = '<li>No data available</li>';
+      }
+    });
+  </script>
+</body>
+</html>
